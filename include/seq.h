@@ -1,9 +1,12 @@
 /**
  * \file seq.h
- * \brief This file contains the implementation of various sequence-related templates.
+ * \brief This file contains the implementation of various sequence-related
+ * templates.
  */
 
 #pragma once
+#include <__utility/integer_sequence.h>
+#include <limits>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -11,8 +14,8 @@
 /**
  * \brief Converts an integer sequence to a string.
  *
- * This function takes an integer sequence and converts it to a string representation.
- * Each element in the sequence is separated by a space.
+ * This function takes an integer sequence and converts it to a string
+ * representation. Each element in the sequence is separated by a space.
  *
  * \tparam T The type of the elements in the sequence.
  * \tparam Is The elements in the sequence.
@@ -29,8 +32,8 @@ std::string sequence_to_string(std::integer_sequence<T, Is...>) {
 /**
  * \brief Helper struct for generating a sequence of total values.
  *
- * This struct provides static member functions and type aliases for generating a sequence of total
- * values from a variadic template parameter pack.
+ * This struct provides static member functions and type aliases for generating
+ * a sequence of total values from a variadic template parameter pack.
  *
  * \tparam Vs The variadic template parameter pack representing the values.
  */
@@ -44,7 +47,8 @@ struct total_seq_helper {
     /**
      * \brief Generates the total value at the specified index.
      *
-     * This function generates the total value at the specified index in the sequence.
+     * This function generates the total value at the specified index in the
+     * sequence.
      *
      * \tparam I The index.
      * \return The total value at the specified index.
@@ -64,7 +68,8 @@ struct total_seq_helper {
     /**
      * \brief Helper function for generating the sequence of total values.
      *
-     * This function generates the sequence of total values using the `gen_total_at` function.
+     * This function generates the sequence of total values using the
+     * `gen_total_at` function.
      *
      * \tparam Is The indices.
      * \param The index sequence.
@@ -75,14 +80,16 @@ struct total_seq_helper {
     }
 
     /**
-     * \brief Finds the index of the first element in the sequence that is equal to the specified
-     * value.
+     * \brief Finds the index of the first element in the sequence that is equal
+     * to the specified value.
      *
-     * This function finds the index of the first element in the sequence that is equal to the
-     * specified value. If no such element is found, it returns the size of the sequence.
+     * This function finds the index of the first element in the sequence that is
+     * equal to the specified value. If no such element is found, it returns the
+     * size of the sequence.
      *
      * \tparam V The value to search for.
-     * \return The index of the first element that is equal to the specified value.
+     * \return The index of the first element that is equal to the specified
+     * value.
      */
     template <int V>
     std::size_t static constexpr find_first_equal() noexcept {
@@ -93,10 +100,12 @@ struct total_seq_helper {
     /**
      * \brief Finds the index of the first element that:
      *    if the value equals the specified the value
-     *    other wise previous index of the value that is greater than the specified value.
+     *    other wise previous index of the value that is greater than the
+     * specified value.
      *
-     * This function finds the index of the first element in the sequence that is greater than the
-     * specified value. If no such element is found, it returns the size of the sequence.
+     * This function finds the index of the first element in the sequence that is
+     * greater than the specified value. If no such element is found, it returns
+     * the size of the sequence.
      *
      * \tparam V The value to compare against.
      * \return The index of the element that meets the specified condition.
@@ -104,16 +113,16 @@ struct total_seq_helper {
     template <int V>
     std::size_t static constexpr find_first_greater_than() noexcept {
         std::size_t index = 0;
-        return (void)((((Vs > V ? (--index, true) :(Vs == V)) || (++index, false))) || ...), index;
+        return (void)((((Vs > V ? (--index, true) : (Vs == V)) || (++index, false))) || ...), index;
     }
 };
 
 /**
  * \brief Alias template for generating a sequence of total values.
  *
- * This alias template takes a variadic template parameter pack `Vs` and generates a sequence of
- * total values using the `total_seq_helper` class. The generated sequence is returned as the type
- * of the alias.
+ * This alias template takes a variadic template parameter pack `Vs` and
+ * generates a sequence of total values using the `total_seq_helper` class. The
+ * generated sequence is returned as the type of the alias.
  *
  * \tparam Vs The variadic template parameter pack representing the values.
  */
@@ -121,10 +130,12 @@ template <int... Vs>
 using make_total_value_sequence = decltype(total_seq_helper<Vs...>::gen_total_value_sequence());
 
 /**
- * \brief The index of the first element in the sequence that is equal to the specified value.
+ * \brief The index of the first element in the sequence that is equal to the
+ * specified value.
  *
- * This constant expression represents the index of the first element in the sequence that is equal
- * to the specified value. If no such element is found, it represents the size of the sequence.
+ * This constant expression represents the index of the first element in the
+ * sequence that is equal to the specified value. If no such element is found,
+ * it represents the size of the sequence.
  */
 template <int V, int... Vs>
 std::size_t constexpr get_index_with_value =
@@ -137,7 +148,8 @@ std::size_t constexpr get_index_with_greater_value =
 /**
  * \brief Generates an index sequence in the specified range.
  *
- * This template function generates an index sequence in the specified range [Min, Max).
+ * This template function generates an index sequence in the specified range
+ * [Min, Max).
  *
  * \tparam Min The minimum value of the range.
  * \tparam Max The maximum value of the range.
@@ -149,9 +161,11 @@ auto constexpr make_index_sequence_range_impl(std::index_sequence<Is...>) {
 }
 
 /**
- * \brief Alias template for generating an index sequence in the specified range.
+ * \brief Alias template for generating an index sequence in the specified
+ * range.
  *
- * This alias template generates an index sequence in the specified range [Min, Max).
+ * This alias template generates an index sequence in the specified range [Min,
+ * Max).
  *
  * \tparam Min The minimum value of the range.
  * \tparam Max The maximum value of the range.
@@ -162,7 +176,8 @@ auto constexpr make_index_sequence_range() {
 }
 
 /**
- * \brief Alias template for the generated index sequence in the specified range.
+ * \brief Alias template for the generated index sequence in the specified
+ * range.
  *
  * This alias template represents the type of the index sequence generated by
  * `make_index_sequence_range`.
@@ -195,8 +210,8 @@ auto make_one_based_index_sequence() {
 /**
  * \brief Alias template for the generated one-based index sequence.
  *
- * This alias template represents the type of the one-based index sequence generated by
- * `make_one_based_index_sequence`.
+ * This alias template represents the type of the one-based index sequence
+ * generated by `make_one_based_index_sequence`.
  *
  * \tparam N The size of the sequence.
  */
@@ -207,7 +222,8 @@ using make_one_based_index_sequence_t = decltype(make_one_based_index_sequence<N
  * \brief Splits a sequence into two sequences.
  *
  * This template function splits a sequence into two sequences.
- * The first sequence has N elements starting from 0, and the second sequence has M - N elements.
+ * The first sequence has N elements starting from 0, and the second sequence
+ * has M - N elements.
  *
  * \tparam N The number of elements in the first sequence.
  * \tparam Is The indices of the elements in the first sequence.
@@ -226,7 +242,8 @@ auto constexpr split_sequence(std::index_sequence<Is...>, std::index_sequence<Js
  * \brief Helper function for splitting a sequence into two sequences.
  *
  * This template function splits a sequence into two sequences.
- * The first sequence has N elements starting from 0, and the second sequence has M - N elements.
+ * The first sequence has N elements starting from 0, and the second sequence
+ * has M - N elements.
  *
  * \tparam N The number of elements in the first sequence.
  * \tparam Is The indices of the elements in the first sequence.
@@ -243,7 +260,8 @@ auto constexpr split_sequence_impl(std::index_sequence<Is...>) {
  * \brief Splits a sequence into two sequences.
  *
  * This template function splits a sequence into two sequences.
- * The first sequence has N elements starting from 0, and the second sequence has M - N elements.
+ * The first sequence has N elements starting from 0, and the second sequence
+ * has M - N elements.
  *
  * \tparam N The number of elements in the first sequence.
  * \tparam M The total number of elements in the sequence.
@@ -253,3 +271,37 @@ template <std::size_t N, std::size_t M>
 auto constexpr split_sequence() {
     return split_sequence_impl<N>(std::make_index_sequence<M>{});
 }
+
+template <int W, int... Vs>
+struct split_total_seq_helper {
+    static constexpr int total_value = (Vs + ...);
+    static constexpr std::size_t word_count = total_value / W;
+
+    static_assert(total_value % W == 0, "total value must be divisible by W");
+    using total_seq = make_total_value_sequence<Vs..., 0>;
+    using word_index_seq = std::make_index_sequence<word_count + 1>;
+
+    template <std::size_t... Is, int... TotalVales>
+    auto static constexpr gen_word_total_value_sequence_impl(
+        std::index_sequence<Is...>, std::integer_sequence<int, TotalVales...>) noexcept {
+        return std::integer_sequence<std::size_t,
+                                     get_index_with_value<W * (1 + Is), TotalVales...>...>{};
+    }
+
+    auto static constexpr gen_word_total_index_sequence() noexcept {
+        return gen_word_total_value_sequence_impl(word_index_seq{}, total_seq{});
+    }
+    using make_word_index_sequence =
+        decltype(split_total_seq_helper<W, Vs...>::gen_word_total_index_sequence());
+
+    // check if the word size is aligned
+    // TODO: check if the value other than last one is greater than value count
+    static constexpr bool is_word_size_aligned = make_word_index_sequence::size() == word_count + 1;
+};
+
+template <int W, int... Vs>
+using make_word_index_sequence =
+    typename split_total_seq_helper<W, Vs...>::make_word_index_sequence;
+
+template <int W, int... Vs>
+constexpr bool is_word_size_aligned = split_total_seq_helper<W, Vs...>::is_word_size_aligned;
