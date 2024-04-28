@@ -188,23 +188,10 @@ auto constexpr make_index_sequence_range() {
 template <std::size_t Min, std::size_t Max>
 using make_index_sequence_range_t = decltype(make_index_sequence_range<Min, Max>());
 
-// make 1 based index sequence, and last element is 0
+// implement 1 based index sequence, and last element is 0
 template <std::size_t N, std::size_t... Is>
 auto constexpr make_one_based_index_sequence_impl(std::index_sequence<Is...>) {
     return std::integer_sequence<std::size_t, ((Is + 1) % N)...>{};
-}
-/**
- * \brief Generates a one-based index sequence.
- *
- * This template function generates a one-based index sequence of size N.
- * The last element of the sequence is 0.
- *
- * \tparam N The size of the sequence.
- * \return The generated one-based index sequence.
- */
-template <std::size_t N>
-auto make_one_based_index_sequence() {
-    return make_one_based_index_sequence_impl<N>(std::make_index_sequence<N>{});
 }
 
 /**
@@ -216,7 +203,8 @@ auto make_one_based_index_sequence() {
  * \tparam N The size of the sequence.
  */
 template <std::size_t N>
-using make_one_based_index_sequence_t = decltype(make_one_based_index_sequence<N>());
+using make_one_based_index_sequence =
+    decltype(make_one_based_index_sequence_impl<N>(std::make_index_sequence<N>{}));
 
 /**
  * \brief Splits a sequence into two sequences.
@@ -305,10 +293,10 @@ struct split_total_seq_helper {
         }
         return true;
     }
+
     // check if the word size is aligned
-    // TODO: check if the value other than last one is greater than value count
     static constexpr bool is_word_size_aligned =
-        apply_predicate([](int i) { return i < (sizeof...(Vs)); }, make_word_index_sequence{});
+        apply_predicate([](int i) { return i <= (sizeof...(Vs)); }, make_word_index_sequence{});
 };
 
 template <int W, int... Vs>
