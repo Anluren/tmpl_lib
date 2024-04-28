@@ -260,28 +260,77 @@ auto constexpr split_sequence() {
     return split_sequence_impl<N>(std::make_index_sequence<M>{});
 }
 
+/**
+ * \brief Helper struct for splitting a sequence into word size (in bits) aligned indexes
+ *
+ * \tparam W The word size.
+ * \tparam Vs The values in the sequence.
+ */
 template <int W, int... Vs>
 struct split_total_seq_helper {
+    /**
+     * \brief The total value of the sequence.
+     */
     static constexpr int total_value = (Vs + ...);
+
+    /**
+     * \brief The number of words in the sequence.
+     */
     static constexpr std::size_t word_count = total_value / W;
 
     static_assert(total_value % W == 0, "total value must be divisible by W");
+
+    /**
+     * \brief The total sequence of values.
+     */
     using total_seq = make_total_value_sequence<Vs..., 0>;
+
+    /**
+     * \brief The sequence of word indices.
+     */
     using word_index_seq = std::make_index_sequence<word_count + 1>;
 
-    template <std::size_t... Is, int... TotalVales>
+    /**
+     * \brief Helper function to generate the word total value sequence.
+     *
+     * \tparam Is The indices of the word total value sequence.
+     * \tparam TotalValues The total values of the sequence.
+     * \param seq The word index sequence.
+     * \param values The total value sequence.
+     * \return The word total value sequence.
+     */
+    template <std::size_t... Is, int... TotalValues>
     auto static constexpr gen_word_total_value_sequence_impl(
-        std::index_sequence<Is...>, std::integer_sequence<int, TotalVales...>) noexcept {
+        std::index_sequence<Is...>, std::integer_sequence<int, TotalValues...>) noexcept {
         return std::integer_sequence<std::size_t,
-                                     get_index_with_value<W * (1 + Is), TotalVales...>...>{};
+                                     get_index_with_value<W * (1 + Is), TotalValues...>...>{};
     }
 
+    /**
+     * \brief Generate the word total index sequence.
+     *
+     * \return The word total index sequence.
+     */
     auto static constexpr gen_word_total_index_sequence() noexcept {
         return gen_word_total_value_sequence_impl(word_index_seq{}, total_seq{});
     }
+
+    /**
+     * \brief Alias for the word index sequence.
+     */
     using make_word_index_sequence =
         decltype(split_total_seq_helper<W, Vs...>::gen_word_total_index_sequence());
 
+    /**
+     * \brief Apply a predicate to the word index sequence.
+     *
+     * \tparam Predicate The predicate function.
+     * \tparam T The type of the values in the sequence.
+     * \tparam Is The values in the sequence.
+     * \param pred The predicate function.
+     * \param seq The word index sequence.
+     * \return True if the predicate is true for all values in the sequence, false otherwise.
+     */
     template <typename Predicate, typename T, T... Is>
     static constexpr bool apply_predicate(Predicate pred,
                                           std::integer_sequence<T, Is...>) noexcept {
@@ -294,14 +343,32 @@ struct split_total_seq_helper {
         return true;
     }
 
-    // check if the word size is aligned
+    /**
+     * \brief Check if the word size is aligned.
+     */
     static constexpr bool is_word_size_aligned =
         apply_predicate([](int i) { return i <= (sizeof...(Vs)); }, make_word_index_sequence{});
 };
 
+/**
+ * \brief Generates index sequence based on values and word size.
+ *
+ * This template alias uses the `split_total_seq_helper` class to generate a word index sequence
+ * based on the provided width (`W`) and values (`Vs...`).
+ *
+ * \tparam W The width of the word
+ * \tparam Vs The values of the sequence
+ * \return The generated word index sequence.
+ */
 template <int W, int... Vs>
 using make_word_index_sequence =
     typename split_total_seq_helper<W, Vs...>::make_word_index_sequence;
 
+/**
+ * \brief Check if the values are word size aligned.
+ *
+ * \tparam W    The width of the word
+ * \tparam Vs   The values of the sequence
+ */
 template <int W, int... Vs>
 constexpr bool is_word_size_aligned = split_total_seq_helper<W, Vs...>::is_word_size_aligned;
