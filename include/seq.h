@@ -294,9 +294,21 @@ struct split_total_seq_helper {
     using make_word_index_sequence =
         decltype(split_total_seq_helper<W, Vs...>::gen_word_total_index_sequence());
 
+    template <typename Predicate, typename T, T... Is>
+    static constexpr bool apply_predicate(Predicate pred,
+                                          std::integer_sequence<T, Is...>) noexcept {
+        T arr[] = {Is...};
+        for (std::size_t i = 0; i < (sizeof...(Is) - 1); ++i) {
+            if (!pred(arr[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
     // check if the word size is aligned
     // TODO: check if the value other than last one is greater than value count
-    static constexpr bool is_word_size_aligned = make_word_index_sequence::size() == word_count + 1;
+    static constexpr bool is_word_size_aligned =
+        apply_predicate([](int i) { return i < (sizeof...(Vs)); }, make_word_index_sequence{});
 };
 
 template <int W, int... Vs>
