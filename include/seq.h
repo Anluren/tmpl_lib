@@ -5,8 +5,6 @@
  */
 
 #pragma once
-#include <__utility/integer_sequence.h>
-#include <limits>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -43,6 +41,22 @@ struct total_seq_helper {
      * The total value of the sequence.
      */
     static constexpr int total_value = (Vs + ...);
+
+    /**
+     * \brief Generates the value at the specified index.
+     *
+     * This function generates the value at the specified index in the sequence.
+     *
+     * \tparam I The index.
+     * \return The value at the specified index.
+     */
+    template <std::size_t I>
+    auto static constexpr get_value_at() noexcept {
+        static_assert(I < sizeof...(Vs), "Index out of range");
+        std::size_t cur_index = 0;
+        int value = 0;
+        return (void)((value = Vs, I == cur_index++) || ...), value;
+    }
 
     /**
      * \brief Generates the total value at the specified index.
@@ -116,6 +130,15 @@ struct total_seq_helper {
         return (void)((((Vs > V ? (--index, true) : (Vs == V)) || (++index, false))) || ...), index;
     }
 };
+
+/**
+ * \brief gets the value at the specified index.
+ *
+ * \tparam I   The index
+ * \tparam Vs  The values in the sequence
+ */
+template <std::size_t I, int... Vs>
+auto static constexpr get_value_at = total_seq_helper<Vs...>::template get_value_at<I>();
 
 /**
  * \brief Alias template for generating a sequence of total values.

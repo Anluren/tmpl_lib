@@ -1,8 +1,16 @@
 #include <gtest/gtest.h>
 #include <iostream>
-#include <utility>
 
 #include "seq.h"
+
+TEST(SeqTest, Basictest) {
+    auto seq = std::integer_sequence<int, 1, 2, 3, 4, 5>();
+    static_assert(get_value_at<0, 1, 2, 3, 4, 5> == 1);
+    static_assert(get_value_at<1, 1, 2, 3, 4, 5> == 2);
+    static_assert(get_value_at<2, 1, 2, 3, 4, 5> == 3);
+    static_assert(get_value_at<3, 1, 2, 3, 4, 5> == 4);
+    static_assert(get_value_at<4, 1, 2, 3, 4, 5> == 5);
+}
 
 TEST(SeqTest, SumSequence) {
     // auto seq = std::integer_sequence<int, 1, 2, 3, 4, 5>();
@@ -35,12 +43,15 @@ TEST(SeqTest, SplitSequence) {
 TEST(split_total_seq_helper, SplitTotalSequence) {
     auto seq = make_total_value_sequence<1, 31, 3, 29, 5, 27>{};
     auto word_index = make_word_index_sequence<32, 1, 31, 3, 29, 5, 27>{};
-    EXPECT_EQ(sequence_to_string(word_index), "2 4 6 7 ");  // TO be verified
+    EXPECT_EQ(sequence_to_string(word_index), "2 4 6 7 ");
+
+    EXPECT_EQ(sequence_to_string(make_word_index_sequence<32, 1, 1, 30, 3, 29, 5, 27>{}),
+              "3 5 7 8 ");
 
     static_assert(is_word_size_aligned<32, 1, 31, 3, 29, 5, 27>);
     static_assert(!is_word_size_aligned<32, 1, 31, 3, 28, 5, 28>);
     auto word_index_1 = make_word_index_sequence<32, 1, 31, 3, 28, 5, 28>{};
-    EXPECT_EQ(sequence_to_string(word_index_1), "2 7 6 7 ");  // to be verified
+    EXPECT_EQ(sequence_to_string(word_index_1), "2 7 6 7 ");
     auto word_values = make_total_value_sequence<32, 1, 31, 3, 28, 5, 28>{};
     EXPECT_EQ(sequence_to_string(word_values), "0 32 33 64 67 95 100 ");
 }
