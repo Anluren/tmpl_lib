@@ -1,7 +1,26 @@
-#include <gtest/gtest.h>
+#include <string>
 #include <iostream>
+#include <gtest/gtest.h>
 
 #include "seq.h"
+
+/**
+ * \brief Converts an integer sequence to a string.
+ *
+ * This function takes an integer sequence and converts it to a string
+ * representation. Each element in the sequence is separated by a space.
+ *
+ * \tparam T The type of the elements in the sequence.
+ * \tparam Is The elements in the sequence.
+ * \param seq The integer sequence to convert.
+ * \return The string representation of the integer sequence.
+ */
+template <typename T, T... Is>
+std::string sequence_to_string(std::integer_sequence<T, Is...>) {
+    std::string result;
+    ((result += std::to_string(Is) + ' '), ...);
+    return result;
+}
 
 TEST(SeqTest, Basictest) {
     auto seq = std::integer_sequence<int, 1, 2, 3, 4, 5>();
@@ -55,21 +74,3 @@ TEST(split_total_seq_helper, SplitTotalSequence) {
     auto word_values = make_total_value_sequence<32, 1, 31, 3, 28, 5, 28>{};
     EXPECT_EQ(sequence_to_string(word_values), "0 32 33 64 67 95 100 ");
 }
-
-// TEST(SeqTest, FindFirstGreaterThan) {
-//     auto seq = std::integer_sequence<int, 1, 2, 3, 4, 5>();
-//     auto result = find_first_greater_than<3, 0>(seq);
-//     EXPECT_EQ(result, 3);
-//     result = find_first_greater_than<4, 0>(seq);
-//     EXPECT_EQ(result, 4);
-//     result = find_first_greater_than<7, 0>(seq);
-//     EXPECT_EQ(result, 5);
-// }
-
-// TEST(SeqTest, SplitSequenceBySum) {
-//     auto seq = std::integer_sequence<int, 1, 2, 3, 4, 5>();
-//     auto split_seq = split_sequence_by_sum<6>(seq);
-
-//     EXPECT_EQ(sequence_to_string(std::get<0>(split_seq)), "1 2 3 ");
-//     EXPECT_EQ(sequence_to_string(std::get<1>(split_seq)), "4 5 ");
-// }

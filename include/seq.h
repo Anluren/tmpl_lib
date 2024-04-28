@@ -5,27 +5,8 @@
  */
 
 #pragma once
-#include <string>
 #include <type_traits>
 #include <utility>
-
-/**
- * \brief Converts an integer sequence to a string.
- *
- * This function takes an integer sequence and converts it to a string
- * representation. Each element in the sequence is separated by a space.
- *
- * \tparam T The type of the elements in the sequence.
- * \tparam Is The elements in the sequence.
- * \param seq The integer sequence to convert.
- * \return The string representation of the integer sequence.
- */
-template <typename T, T... Is>
-std::string sequence_to_string(std::integer_sequence<T, Is...>) {
-    std::string result;
-    ((result += std::to_string(Is) + ' '), ...);
-    return result;
-}
 
 /**
  * \brief Helper struct for generating a sequence of total values.
@@ -357,7 +338,7 @@ struct split_total_seq_helper {
     template <typename Predicate, typename T, T... Is>
     static constexpr bool apply_predicate(Predicate pred,
                                           std::integer_sequence<T, Is...>) noexcept {
-        T arr[] = {Is...};
+        constexpr T arr[] = {Is...};
         for (std::size_t i = 0; i < (sizeof...(Is) - 1); ++i) {
             if (!pred(arr[i])) {
                 return false;
