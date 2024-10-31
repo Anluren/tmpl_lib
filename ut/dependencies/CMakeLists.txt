@@ -17,11 +17,11 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(googletest)
 
 # Add your source files here
-add_executable(MyProject main.cpp)
+# add_executable(MyProject main.cpp)
 
-# Link GoogleTest to your project
-target_link_libraries(MyProject gtest gtest_main)
+# # Link GoogleTest to your project
+# target_link_libraries(MyProject gtest gtest_main)
 
 # Ensure that the tests are built
 enable_testing()
-add_test(NAME MyProjectTest COMMAND MyProject)
+# add_test(NAME MyProjectTest COMMAND MyProject)
