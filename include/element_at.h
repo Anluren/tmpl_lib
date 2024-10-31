@@ -7,19 +7,23 @@
 template <typename... Ts>
 struct TypeList {};
 
+// Define a pair of index and type
+template <std::size_t Index, typename T>
+struct IndexedType {};
+
 // Primary template for element_at
 template <std::size_t Index, typename List>
 struct element_at;
 
 // Specialization for TypeList
-template <std::size_t Index, typename Head, typename... Tail>
-struct element_at<Index, TypeList<Head, Tail...>> {
-    using type = typename element_at<Index - 1, TypeList<Tail...>>::type;
+template <std::size_t Index, std::size_t HeadIndex, typename Head, typename... Tail>
+struct element_at<Index, TypeList<IndexedType<HeadIndex, Head>, Tail...>> {
+    using type = typename element_at<Index, TypeList<Tail...>>::type;
 };
 
-// Specialization for the base case (Index == 0)
-template <typename Head, typename... Tail>
-struct element_at<0, TypeList<Head, Tail...>> {
+// Specialization for the base case (Index matches HeadIndex)
+template <std::size_t Index, typename Head, typename... Tail>
+struct element_at<Index, TypeList<IndexedType<Index, Head>, Tail...>> {
     using type = Head;
 };
 
