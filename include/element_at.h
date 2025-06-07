@@ -16,15 +16,12 @@ template <std::size_t Index, typename List>
 struct element_at;
 
 // Specialization for TypeList
-template <std::size_t Index, std::size_t HeadIndex, typename Head, typename... Tail>
-struct element_at<Index, TypeList<IndexedType<HeadIndex, Head>, Tail...>> {
-    using type = typename element_at<Index, TypeList<Tail...>>::type;
-};
+template <std::size_t Index, typename... Ts>
+struct element_at<Index, TypeList<Ts...>> {
+    template <std::size_t I, typename T>
+    static constexpr T helper(IndexedType<I, T>);
 
-// Specialization for the base case (Index matches HeadIndex)
-template <std::size_t Index, typename Head, typename... Tail>
-struct element_at<Index, TypeList<IndexedType<Index, Head>, Tail...>> {
-    using type = Head;
+    using type = decltype(helper<Index>(std::declval<Ts>()...));
 };
 
 // Helper alias template

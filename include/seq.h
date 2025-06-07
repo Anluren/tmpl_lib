@@ -1,10 +1,6 @@
-/**
- * \file seq.h
- * \brief This file contains the implementation of various sequence-related
- * templates.
- */
+#ifndef SEQ_H
+#define SEQ_H
 
-#pragma once
 #include <type_traits>
 #include <utility>
 
@@ -109,6 +105,30 @@ struct total_seq_helper {
     std::size_t static constexpr find_first_greater_than() noexcept {
         std::size_t index = 0;
         return (void)((((Vs > V ? (--index, true) : (Vs == V)) || (++index, false))) || ...), index;
+    }
+
+    // /**
+    //  * \brief Gets the last value in the sequence.
+    //  *
+    //  * This function returns the last value in the sequence.
+    //  *
+    //  * \return The last value in the sequence.
+    //  */
+    // auto static constexpr get_last_value() noexcept {
+    //     int last_value = 0;
+    //     return (void)((last_value = Vs, ...)), last_value;
+    // }
+
+    /**
+     * \brief Gets the first value in the sequence.
+     *
+     * This function returns the first value in the sequence.
+     *
+     * \return The first value in the sequence.
+     */
+    auto static constexpr get_first_value() noexcept {
+        int first_value = 0;
+        return (void)((first_value = Vs, false) || ...), first_value;
     }
 };
 
@@ -376,3 +396,5 @@ using make_word_index_sequence =
  */
 template <int W, int... Vs>
 constexpr bool is_word_size_aligned = split_total_seq_helper<W, Vs...>::is_word_size_aligned;
+
+#endif // SEQ_H
