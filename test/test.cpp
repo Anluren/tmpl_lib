@@ -74,3 +74,18 @@ TEST(split_total_seq_helper, SplitTotalSequence) {
     auto word_values = make_total_value_sequence<32, 1, 31, 3, 28, 5, 28>{};
     EXPECT_EQ(sequence_to_string(word_values), "0 32 33 64 67 95 100 ");
 }
+
+
+#define FIRST_N_0(...)
+#define FIRST_N_1(a1, ...) a1
+#define FIRST_N_2(a1, a2, ...) a1, a2
+#define FIRST_N_3(a1, a2, a3, ...) a1, a2, a3
+#define FIRST_N_4(a1, a2, a3, a4, ...) a1, a2, a3, a4
+#define FIRST_N_5(a1, a2, a3, a4, a5, ...) a1, a2, a3, a4, a5
+
+#define FIRST_N(N, ...) FIRST_N_##N(__VA_ARGS__)
+
+// Usage examples:
+FIRST_N(0, A, B, C, D) // expands to nothing
+FIRST_N(2, A, B, C, D) // expands to: A, B
+FIRST_N(4, X, Y, Z, W, Q) // expands to: X, Y, Z, W
