@@ -1,0 +1,25 @@
+CompileFlags:
+  Add:
+    - -std=c++17
+    - -Wall
+    - -Wextra
+    - -I/Users/dzheng/workspace/tmpl_lib/include
+    - -I/Users/dzheng/workspace/tmpl_lib/util_macro
+    - -I/Users/dzheng/workspace/tmpl_lib/googletest/googletest/include
+    - -I/Users/dzheng/workspace/tmpl_lib/googletest/googlemock/include
+  Remove:
+    - -march=*
+    - -mtune=*
+
+Diagnostics:
+  ClangTidy:
+    Add:
+      - modernize-*
+      - readability-*
+      - performance-*
+    Remove:
+      - modernize-use-trailing-return-type
+      - readability-identifier-length
+
+Index:
+  Background: Build

@@ -1,0 +1,49 @@
+# Build directories
+build/
+**/build/
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+
+# Compiled binaries
+*.exe
+*.out
+*.o
+*.a
+*.so
+*.dylib
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Language server cache
+.cache/
+
+# Temporary and backup files
+*.tmp
+*.bak
+*.orig
+current.diff
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Compilation database (will be symlinked)
+compile_commands.json
+
+# Google Test (submodule)
+googletest/

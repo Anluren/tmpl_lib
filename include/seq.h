@@ -3,6 +3,7 @@
 
 #include <type_traits>
 #include <utility>
+#include <array>
 
 /**
  * \brief Helper struct for generating a sequence of total values.
@@ -89,22 +90,20 @@ struct total_seq_helper {
     }
 
     /**
-     * \brief Finds the index of the first element that:
-     *    if the value equals the specified the value
-     *    other wise previous index of the value that is greater than the
-     * specified value.
+     * \brief Finds the index of the first element in the sequence that is
+     * greater than the specified value.
      *
      * This function finds the index of the first element in the sequence that is
      * greater than the specified value. If no such element is found, it returns
      * the size of the sequence.
      *
      * \tparam V The value to compare against.
-     * \return The index of the element that meets the specified condition.
+     * \return The index of the first element that is greater than the specified value.
      */
     template <int V>
     std::size_t static constexpr find_first_greater_than() noexcept {
         std::size_t index = 0;
-        return (void)((((Vs > V ? (--index, true) : (Vs == V)) || (++index, false))) || ...), index;
+        return (void)((((Vs > V) || (++index, false))) || ...), index;
     }
 
     // /**
@@ -127,8 +126,8 @@ struct total_seq_helper {
      * \return The first value in the sequence.
      */
     auto static constexpr get_first_value() noexcept {
-        int first_value = 0;
-        return (void)((first_value = Vs, false) || ...), first_value;
+        constexpr std::array<int, sizeof...(Vs)> first_value_array = {Vs...};
+        return first_value_array[0];
     }
 };
 
@@ -358,7 +357,7 @@ struct split_total_seq_helper {
     template <typename Predicate, typename T, T... Is>
     static constexpr bool apply_predicate(Predicate pred,
                                           std::integer_sequence<T, Is...>) noexcept {
-        constexpr T arr[] = {Is...};
+        constexpr std::array<T, sizeof...(Is)> arr = {Is...};
         for (std::size_t i = 0; i < (sizeof...(Is) - 1); ++i) {
             if (!pred(arr[i])) {
                 return false;
