@@ -52,9 +52,34 @@ struct total_seq_helper {
         return (void)(((I == cur_index++) || (total += Vs, false)) || ...), total;
     }
 
+    /**
+     * \brief Generates the reverse total value at the specified index.
+     *
+     * This function generates the sum of all values after the specified index.
+     * For example, for sequence [1, 2, 3, 4], reverse total at index 1 would be 3+4=7.
+     *
+     * \tparam I The index.
+     * \return The reverse total value at the specified index.
+     */
+    template <std::size_t I>
+    auto static constexpr gen_reverse_total_at() {
+        static_assert(I < sizeof...(Vs), "Index out of range");
+        constexpr std::array<int, sizeof...(Vs)> values = {Vs...};
+        int total = 0;
+        for (std::size_t idx = I + 1; idx < sizeof...(Vs); ++idx) {
+            total += values[idx];
+        }
+        return total;
+    }
+
     template <std::size_t... Is>
     auto static constexpr gen_total_value_sequence_impl(const std::index_sequence<Is...>) {
         return std::integer_sequence<int, gen_total_at<Is>()...>{};
+    }
+
+    template <std::size_t... Is>
+    auto static constexpr gen_reverse_total_value_sequence_impl(const std::index_sequence<Is...>) {
+        return std::integer_sequence<int, gen_reverse_total_at<Is>()...>{};
     }
 
     /**
@@ -69,6 +94,19 @@ struct total_seq_helper {
      */
     auto static constexpr gen_total_value_sequence() {
         return gen_total_value_sequence_impl(std::make_index_sequence<sizeof...(Vs)>{});
+    }
+
+    /**
+     * \brief Helper function for generating the sequence of reverse total values.
+     *
+     * This function generates the sequence of reverse total values using the
+     * `gen_reverse_total_at` function. Each element contains the sum of all values
+     * that come after its position.
+     *
+     * \return The generated sequence of reverse total values.
+     */
+    auto static constexpr gen_reverse_total_value_sequence() {
+        return gen_reverse_total_value_sequence_impl(std::make_index_sequence<sizeof...(Vs)>{});
     }
 
     /**
@@ -442,5 +480,25 @@ constexpr auto reverse_index_sequence(std::index_sequence<Is...>) {
     constexpr std::size_t N = sizeof...(Is);
     return std::index_sequence<(N - 1 - Is)...>{};
 }
+
+/**
+ * \brief Alias template for generating a sequence of reverse total values.
+ *
+ * This alias template takes a variadic template parameter pack `Vs` and
+ * generates a sequence of reverse total values using the `total_seq_helper` class.
+ * Each element in the resulting sequence contains the sum of all values that come
+ * after its position in the original sequence.
+ *
+ * For example, make_reverse_total_value_sequence<1, 2, 3, 4> produces
+ * std::integer_sequence<int, 9, 7, 4, 0> where:
+ * - 9 = 2+3+4 (sum after index 0)
+ * - 7 = 3+4 (sum after index 1)  
+ * - 4 = 4 (sum after index 2)
+ * - 0 = (sum after index 3, which is empty)
+ *
+ * \tparam Vs The variadic template parameter pack representing the values.
+ */
+template <int... Vs>
+using make_reverse_total_value_sequence = decltype(total_seq_helper<Vs...>::gen_reverse_total_value_sequence());
 
 #endif // SEQ_H

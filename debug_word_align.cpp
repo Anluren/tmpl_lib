@@ -2,10 +2,13 @@
 #include "seq.h"
 
 int main() {
-    std::cout << "Testing <8, 8, 16>:" << std::endl;
-    std::cout << "Total value: " << split_total_seq_helper<8, 8, 8, 16>::total_value << std::endl;
-    std::cout << "Word count: " << split_total_seq_helper<8, 8, 8, 16>::word_count << std::endl;
-    std::cout << "sizeof...(Vs): " << 3 << std::endl;
-    std::cout << "is_word_size_aligned: " << (is_word_size_aligned<8, 8, 8, 16> ? "true" : "false") << std::endl;
+    std::cout << "Testing reverse total sequence [1, 2, 3]:" << std::endl;
+    
+    using helper = total_seq_helper<1, 2, 3>;
+    
+    std::cout << "gen_reverse_total_at<0>(): " << helper::gen_reverse_total_at<0>() << " (expected: 5)" << std::endl;
+    std::cout << "gen_reverse_total_at<1>(): " << helper::gen_reverse_total_at<1>() << " (expected: 3)" << std::endl;
+    std::cout << "gen_reverse_total_at<2>(): " << helper::gen_reverse_total_at<2>() << " (expected: 0)" << std::endl;
+    
     return 0;
 }

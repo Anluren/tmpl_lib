@@ -191,6 +191,11 @@ TEST(SeqTest, CompileTimeEvaluation) {
     static_assert(get_index_with_value<200, 100, 200, 300> == 1);
     static_assert(is_word_size_aligned<8, 8, 8, 8>);
     
+    // Test reverse total value functionality at compile time
+    static_assert(total_seq_helper<1, 2, 3>::gen_reverse_total_at<0>() == 5);  // 2+3 = 5
+    static_assert(total_seq_helper<1, 2, 3>::gen_reverse_total_at<1>() == 3);  // 3 = 3
+    static_assert(total_seq_helper<1, 2, 3>::gen_reverse_total_at<2>() == 0);  // (empty) = 0
+    
     // If we reach here, all static_asserts passed
     SUCCEED();
 }
@@ -225,4 +230,39 @@ TEST(SeqTest, LargerSequences) {
     // Test that it compiles and works at compile time
     static_assert(large::total_value == 55);
     static_assert(large::get_value_at<4>() == 5);
+}
+
+// Test make_reverse_total_value_sequence
+TEST(SeqTest, MakeReverseTotalValueSequence) {
+    // Test with sequence [1, 2, 3, 4]
+    // Expected reverse totals: [9, 7, 4, 0] (sums after each position)
+    using seq = make_reverse_total_value_sequence<1, 2, 3, 4>;
+    using expected = std::integer_sequence<int, 9, 7, 4, 0>;
+    
+    EXPECT_TRUE((std::is_same_v<seq, expected>));
+    
+    // Test with sequence [5, 10, 15]
+    // Expected reverse totals: [25, 15, 0]
+    using seq2 = make_reverse_total_value_sequence<5, 10, 15>;
+    using expected2 = std::integer_sequence<int, 25, 15, 0>;
+    
+    EXPECT_TRUE((std::is_same_v<seq2, expected2>));
+    
+    // Test with single element [42]
+    // Expected reverse totals: [0]
+    using seq3 = make_reverse_total_value_sequence<42>;
+    using expected3 = std::integer_sequence<int, 0>;
+    
+    EXPECT_TRUE((std::is_same_v<seq3, expected3>));
+}
+
+// Test gen_reverse_total_at functionality
+TEST(SeqTest, TotalSeqHelperGenReverseTotalAt) {
+    using helper = total_seq_helper<1, 2, 3, 4>;
+    
+    // Test reverse cumulative totals
+    EXPECT_EQ(helper::gen_reverse_total_at<0>(), 9);  // Sum after index 0: 2+3+4 = 9
+    EXPECT_EQ(helper::gen_reverse_total_at<1>(), 7);  // Sum after index 1: 3+4 = 7
+    EXPECT_EQ(helper::gen_reverse_total_at<2>(), 4);  // Sum after index 2: 4 = 4
+    EXPECT_EQ(helper::gen_reverse_total_at<3>(), 0);  // Sum after index 3: (empty) = 0
 }
