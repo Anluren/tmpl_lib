@@ -397,4 +397,51 @@ using make_word_index_sequence =
 template <int W, int... Vs>
 constexpr bool is_word_size_aligned = split_total_seq_helper<W, Vs...>::is_word_size_aligned;
 
+/**
+ * \brief Creates a reversed index sequence.
+ *
+ * This template function creates an index sequence with indices in reverse order.
+ * For example, make_reverse_index_sequence<5>() creates std::index_sequence<4, 3, 2, 1, 0>.
+ *
+ * \tparam N The size of the sequence.
+ * \tparam Is The indices (automatically deduced).
+ * \return A reversed index sequence.
+ */
+template<std::size_t N, std::size_t... Is>
+constexpr auto make_reverse_index_sequence_impl(std::index_sequence<Is...>) {
+    return std::index_sequence<(N - 1 - Is)...>{};
+}
+
+/**
+ * \brief Creates a reversed index sequence of size N.
+ *
+ * \tparam N The size of the sequence.
+ * \return A reversed index sequence from N-1 down to 0.
+ */
+template<std::size_t N>
+constexpr auto make_reverse_index_sequence() {
+    return make_reverse_index_sequence_impl<N>(std::make_index_sequence<N>{});
+}
+
+/**
+ * \brief Type alias for reversed index sequence.
+ *
+ * \tparam N The size of the sequence.
+ */
+template<std::size_t N>
+using make_reverse_index_sequence_t = 
+    decltype(make_reverse_index_sequence_impl<N>(std::make_index_sequence<N>{}));
+
+/**
+ * \brief Reverses an existing index sequence.
+ *
+ * \tparam Is The indices in the original sequence.
+ * \return A reversed version of the input sequence.
+ */
+template<std::size_t... Is>
+constexpr auto reverse_index_sequence(std::index_sequence<Is...>) {
+    constexpr std::size_t N = sizeof...(Is);
+    return std::index_sequence<(N - 1 - Is)...>{};
+}
+
 #endif // SEQ_H

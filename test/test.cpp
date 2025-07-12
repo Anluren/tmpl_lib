@@ -85,7 +85,9 @@ TEST(split_total_seq_helper, SplitTotalSequence) {
 
 #define FIRST_N(N, ...) FIRST_N_##N(__VA_ARGS__)
 
-// Usage examples:
+// Usage examples
+#if 0
 FIRST_N(0, A, B, C, D) // expands to nothing
 FIRST_N(2, A, B, C, D) // expands to: A, B
 FIRST_N(4, X, Y, Z, W, Q) // expands to: X, Y, Z, W
+#endif
