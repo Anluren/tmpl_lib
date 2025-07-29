@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <utility>
 #include <tuple>
+#include <array>
 
 template <std::size_t I>
 struct IndexWrapper {
@@ -23,6 +24,19 @@ struct IndexWrapper {
 // Using nested structure approach for TypeValueContainer
 template <std::size_t ...Os>
 struct OutputIndicesWrapper {
+    // Compile-time function to get value at given index from Os parameter pack
+    template <std::size_t Index>
+    static constexpr std::size_t get_value_at() {
+        static_assert(Index < sizeof...(Os), "Index out of range");
+        constexpr std::array<std::size_t, sizeof...(Os)> values = {Os...};
+        return values[Index];
+    }
+
+    // Get the size of the parameter pack
+    static constexpr std::size_t size() {
+        return sizeof...(Os);
+    }
+
     template <typename... TypeValues>
     struct TypeValueContainer {
         std::tuple<TypeValues...> values;
@@ -42,6 +56,17 @@ struct OutputIndicesWrapper {
 
         // Access to the output indices
         static constexpr auto output_indices = std::index_sequence<Os...>{};
+        
+        // Compile-time function to get value at given index from Os parameter pack
+        template <std::size_t Index>
+        static constexpr std::size_t get_output_index_at() {
+            return OutputIndicesWrapper::template get_value_at<Index>();
+        }
+        
+        // Get the size of the output indices
+        static constexpr std::size_t output_size() {
+            return OutputIndicesWrapper::size();
+        }
     };
 };
 

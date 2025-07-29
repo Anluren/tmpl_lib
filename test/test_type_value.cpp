@@ -67,6 +67,20 @@ TEST(TypeValueContainerTest, OutputIndicesAccess) {
     
     // Test that we can access the size
     EXPECT_EQ(indices.size(), 3);
+    
+    // Test new get_value_at functionality
+    static_assert(OutputIndicesWrapper<10, 20, 30>::get_value_at<0>() == 10);
+    static_assert(OutputIndicesWrapper<10, 20, 30>::get_value_at<1>() == 20);
+    static_assert(OutputIndicesWrapper<10, 20, 30>::get_value_at<2>() == 30);
+    
+    // Test size function
+    static_assert(OutputIndicesWrapper<10, 20, 30>::size() == 3);
+    
+    // Test container methods
+    static_assert(MyContainer::get_output_index_at<0>() == 10);
+    static_assert(MyContainer::get_output_index_at<1>() == 20);
+    static_assert(MyContainer::get_output_index_at<2>() == 30);
+    static_assert(MyContainer::output_size() == 3);
 }
 
 TEST(TypeValueContainerTest, EmptyContainer) {
@@ -154,4 +168,34 @@ TEST(TypeValueTest, MoveOnlyType) {
     
     EXPECT_EQ(container.get<0>().value.value, 99);
     EXPECT_EQ(container.get<0>().index, 7);
+}
+
+TEST(OutputIndicesWrapperTest, GetValueAtFunction) {
+    // Test the new get_value_at functionality
+    using Wrapper = OutputIndicesWrapper<100, 200, 300, 400>;
+    
+    // Test compile-time access to individual values
+    static_assert(Wrapper::get_value_at<0>() == 100);
+    static_assert(Wrapper::get_value_at<1>() == 200);
+    static_assert(Wrapper::get_value_at<2>() == 300);
+    static_assert(Wrapper::get_value_at<3>() == 400);
+    
+    // Test size function
+    static_assert(Wrapper::size() == 4);
+    
+    // Test with empty wrapper
+    using EmptyWrapper = OutputIndicesWrapper<>;
+    static_assert(EmptyWrapper::size() == 0);
+    
+    // Test with single value
+    using SingleWrapper = OutputIndicesWrapper<42>;
+    static_assert(SingleWrapper::get_value_at<0>() == 42);
+    static_assert(SingleWrapper::size() == 1);
+    
+    // Runtime tests for good measure
+    EXPECT_EQ(Wrapper::get_value_at<0>(), 100);
+    EXPECT_EQ(Wrapper::get_value_at<1>(), 200);
+    EXPECT_EQ(Wrapper::get_value_at<2>(), 300);
+    EXPECT_EQ(Wrapper::get_value_at<3>(), 400);
+    EXPECT_EQ(Wrapper::size(), 4);
 }
