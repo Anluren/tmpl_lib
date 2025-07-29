@@ -14,6 +14,11 @@ target_link_libraries(test_check_env gtest_main gtest)
 add_executable(seq_test seq_test.cpp)
 target_link_libraries(seq_test gtest_main gtest seq)
 
+# Add test for type_value
+add_executable(test_type_value test_type_value.cpp)
+target_include_directories(test_type_value PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(test_type_value gtest_main gtest)
+
 # Include GoogleTest module
 include(GoogleTest)
 
@@ -21,3 +26,4 @@ include(GoogleTest)
 gtest_discover_tests(test_mylib)
 gtest_discover_tests(test_check_env)
 gtest_discover_tests(seq_test)
+gtest_discover_tests(test_type_value)
