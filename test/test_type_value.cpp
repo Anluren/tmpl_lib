@@ -59,14 +59,14 @@ TEST(TypeValueContainerTest, BasicUsage) {
 
 TEST(TypeValueContainerTest, OutputIndicesAccess) {
     // Test access to output indices
-    using MyContainer = OutputIndicesWrapper<10, 20, 30>::TypeValueContainer<int>;
+    using MyContainer = OutputIndicesWrapper<10, 20, 30>::TypeValueContainer<>;
     
     // Verify the output_indices is correct
     constexpr auto indices = MyContainer::output_indices;
     static_assert(std::is_same_v<decltype(indices), const std::index_sequence<10, 20, 30>>);
     
-    // Test that we can access the size
-    EXPECT_EQ(indices.size(), 3);
+    // Test that we can access the size - note: for compile-time testing only
+    static_assert(MyContainer::output_size() == 3);
     
     // Test new get_value_at functionality
     static_assert(OutputIndicesWrapper<10, 20, 30>::get_value_at<0>() == 10);

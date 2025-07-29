@@ -1,0 +1,14 @@
+diff --git a/test/test.cpp b/test/test.cpp
+index 7171342..8ebda9a 100644
+--- a/test/test.cpp
++++ b/test/test.cpp
+@@ -84,8 +84,3 @@ TEST(split_total_seq_helper, SplitTotalSequence) {
+ #define FIRST_N_5(a1, a2, a3, a4, a5, ...) a1, a2, a3, a4, a5
+ 
+ #define FIRST_N(N, ...) FIRST_N_##N(__VA_ARGS__)
+-
+-// Usage examples:
+-FIRST_N(0, A, B, C, D) // expands to nothing
+-FIRST_N(2, A, B, C, D) // expands to: A, B
+-FIRST_N(4, X, Y, Z, W, Q) // expands to: X, Y, Z, W
+\ No newline at end of file

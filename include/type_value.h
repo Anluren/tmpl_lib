@@ -38,20 +38,19 @@ struct OutputIndicesWrapper {
     }
 
     template <typename... TypeValues>
-    struct TypeValueContainer {
-        std::tuple<TypeValues...> values;
-
+    struct TypeValueContainer : public TypeValues... {
+        
         explicit TypeValueContainer(TypeValues&&... vals)
-            : values(std::forward<TypeValues>(vals)...) {}
+            : TypeValues(std::forward<TypeValues>(vals))... {}
 
         template <std::size_t Index>
         auto& get() {
-            return std::get<Index>(values);
+            return std::get<Index>(std::forward_as_tuple(static_cast<TypeValues&>(*this)...));
         }
 
         template <std::size_t Index>
         const auto& get() const {
-            return std::get<Index>(values);
+            return std::get<Index>(std::forward_as_tuple(static_cast<const TypeValues&>(*this)...));
         }
 
         // Access to the output indices

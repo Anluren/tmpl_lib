@@ -1,0 +1,30 @@
+@startuml
+left to right direction
+
+' Define classes
+class Person {
+    +String name
+    +int age
+    +void displayInfo()
+}
+
+class Student {
+    +int studentId
+    +void study()
+}
+
+class Teacher {
+    +int teacherId
+    +void teach()
+}
+
+' Define relationships
+Person <|-- Student
+Person <|-- Teacher
+
+' Add some notes
+note left of Person : This is a base class
+note right of Student : Inherits from Person
+note right of Teacher : Inherits from Person
+
+@enduml
