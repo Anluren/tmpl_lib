@@ -55,16 +55,18 @@ public:
     // Print side-by-side comparison with color highlighting
     static void print_comparison(const uint8_t* vec1, std::size_t len1,
                                const uint8_t* vec2, std::size_t len2,
-                               std::size_t bytes_per_line = 32) {
+                               std::size_t bytes_per_line = 32,
+                               std::ostream* output = nullptr) {
+        std::ostream& out = output ? *output : std::cout;
         std::size_t max_size = std::max(len1, len2);
         
-        std::cout << Colors::BOLD << Colors::CYAN << "Vector comparison (showing hex values, 32 bytes per line):" << Colors::RESET << "\n";
-        std::cout << Colors::BOLD << "Position   | Vec1 Data" << std::string(117, ' ') << "| Vec2 Data" << std::string(117, ' ') << "|" << Colors::RESET << "\n";
-        std::cout << std::string(11, '-') << "|" << std::string(120, '-') << "|" << std::string(120, '-') << "|" << "\n";
+        out << Colors::BOLD << Colors::CYAN << "Vector comparison (showing hex values, 32 bytes per line):" << Colors::RESET << "\n";
+        out << Colors::BOLD << "Position   | Vec1 Data" << std::string(117, ' ') << "| Vec2 Data" << std::string(117, ' ') << "|" << Colors::RESET << "\n";
+        out << std::string(11, '-') << "|" << std::string(120, '-') << "|" << std::string(120, '-') << "|" << "\n";
         
         for (std::size_t i = 0; i < max_size; i += bytes_per_line) {
             // Print position
-            std::cout << Colors::BLUE << std::setfill('0') << std::setw(8) << std::hex << i << Colors::RESET << "   | ";
+            out << Colors::BLUE << std::setfill('0') << std::setw(8) << std::hex << i << Colors::RESET << "   | ";
             
             // Print vec1 line with color coding
             for (std::size_t j = 0; j < bytes_per_line && (i + j) < max_size; ++j) {
@@ -77,23 +79,23 @@ public:
                 
                 if (i + j < len1) {
                     if (has_diff) {
-                        std::cout << Colors::BG_RED << Colors::WHITE;
+                        out << Colors::BG_RED << Colors::WHITE;
                     } else {
-                        std::cout << Colors::GREEN;
+                        out << Colors::GREEN;
                     }
-                    std::cout << std::setfill('0') << std::setw(2) << std::hex 
+                    out << std::setfill('0') << std::setw(2) << std::hex 
                              << static_cast<unsigned>(vec1[i + j]) << Colors::RESET << " ";
                 } else {
-                    std::cout << Colors::YELLOW << "--" << Colors::RESET << " ";
+                    out << Colors::YELLOW << "--" << Colors::RESET << " ";
                 }
             }
             
             // Pad to fixed width
             std::size_t printed_bytes = std::min(bytes_per_line, max_size - i);
             for (std::size_t k = printed_bytes; k < bytes_per_line; ++k) {
-                std::cout << "   ";
+                out << "   ";
             }
-            std::cout << "| ";
+            out << "| ";
             
             // Print vec2 line with color coding
             for (std::size_t j = 0; j < bytes_per_line && (i + j) < max_size; ++j) {
@@ -106,63 +108,65 @@ public:
                 
                 if (i + j < len2) {
                     if (has_diff) {
-                        std::cout << Colors::BG_RED << Colors::WHITE;
+                        out << Colors::BG_RED << Colors::WHITE;
                     } else {
-                        std::cout << Colors::GREEN;
+                        out << Colors::GREEN;
                     }
-                    std::cout << std::setfill('0') << std::setw(2) << std::hex 
+                    out << std::setfill('0') << std::setw(2) << std::hex 
                              << static_cast<unsigned>(vec2[i + j]) << Colors::RESET << " ";
                 } else {
-                    std::cout << Colors::YELLOW << "--" << Colors::RESET << " ";
+                    out << Colors::YELLOW << "--" << Colors::RESET << " ";
                 }
             }
             
             // Pad to fixed width
             for (std::size_t k = printed_bytes; k < bytes_per_line; ++k) {
-                std::cout << "   ";
+                out << "   ";
             }
-            std::cout << "|\n";
+            out << "|\n";
         }
         
         // Print legend
-        std::cout << "\n" << Colors::BOLD << "Legend:" << Colors::RESET << "\n";
-        std::cout << Colors::GREEN << "●" << Colors::RESET << " Matching bytes  ";
-        std::cout << Colors::BG_RED << Colors::WHITE << "●" << Colors::RESET << " Different bytes  ";
-        std::cout << Colors::YELLOW << "●" << Colors::RESET << " Missing bytes\n";
+        out << "\n" << Colors::BOLD << "Legend:" << Colors::RESET << "\n";
+        out << Colors::GREEN << "●" << Colors::RESET << " Matching bytes  ";
+        out << Colors::BG_RED << Colors::WHITE << "●" << Colors::RESET << " Different bytes  ";
+        out << Colors::YELLOW << "●" << Colors::RESET << " Missing bytes\n";
         
-        std::cout << std::dec; // Reset to decimal
+        out << std::dec; // Reset to decimal
     }
     
     // Print interleaved comparison (vec1 and vec2 on adjacent lines)
     static void print_interleaved_comparison(const uint8_t* vec1, std::size_t len1,
                                            const uint8_t* vec2, std::size_t len2,
-                                           std::size_t bytes_per_line = 32) {
+                                           std::size_t bytes_per_line = 32,
+                                           std::ostream* output = nullptr) {
+        std::ostream& out = output ? *output : std::cout;
         std::size_t max_size = std::max(len1, len2);
         
-        std::cout << Colors::BOLD << Colors::CYAN << "Interleaved Vector Comparison (32 bytes per line):" << Colors::RESET << "\n";
-        std::cout << Colors::BOLD << "Position   | Data (Vec1 then Vec2 on adjacent lines)" << Colors::RESET << "\n";
-        std::cout << std::string(11, '-') << "|" << std::string(101, '-') << "\n";
+        out << Colors::BOLD << Colors::CYAN << "Interleaved Vector Comparison (32 bytes per line):" << Colors::RESET << "\n";
+        out << Colors::BOLD << "Position   | Data (Vec1 then Vec2 on adjacent lines)" << Colors::RESET << "\n";
+        out << std::string(11, '-') << "|" << std::string(101, '-') << "\n";
         
         for (std::size_t i = 0; i < max_size; i += bytes_per_line) {
             // Print ruler line for every 16 bytes on first chunk
             if (i == 0) {
-                std::cout << Colors::CYAN << "           | Ruler:";
+                out << Colors::CYAN << "           | Ruler:";
                 for (std::size_t j = 0; j < bytes_per_line; ++j) {
                     if (j % 16 == 0) {
-                        std::cout << Colors::BOLD << Colors::BLUE << std::setfill('0') << std::setw(2) << std::hex << j << Colors::RESET;
+                        out << Colors::BOLD << Colors::BLUE << std::setfill('0') << std::setw(2) << std::hex << j << Colors::RESET;
                     } else {
-                        std::cout << Colors::CYAN << ".." << Colors::RESET;
+                        out << Colors::CYAN << ".." << Colors::RESET;
                     }
-                    std::cout << " ";
+                    out << " ";
                 }
-                std::cout << "\n";
-                std::cout << "           |" << std::string(101, '-') << "\n";
+                out << "\n";
+                out << "           |" << std::string(101, '-') << "\n";
             }
             // Print position for this chunk
-            std::cout << Colors::BLUE << std::setfill('0') << std::setw(8) << std::hex << i << Colors::RESET << "   | ";
+            out << Colors::BLUE << std::setfill('0') << std::setw(8) << std::hex << i << Colors::RESET << "   | ";
             
             // Print vec1 line with color coding
-            std::cout << Colors::BOLD << "Vec1: " << Colors::RESET;
+            out << Colors::BOLD << "Vec1: " << Colors::RESET;
             for (std::size_t j = 0; j < bytes_per_line && (i + j) < max_size; ++j) {
                 bool has_diff = false;
                 if (i + j < len1 && i + j < len2) {
@@ -173,20 +177,20 @@ public:
                 
                 if (i + j < len1) {
                     if (has_diff) {
-                        std::cout << Colors::BG_RED << Colors::WHITE;
+                        out << Colors::BG_RED << Colors::WHITE;
                     } else {
-                        std::cout << Colors::GREEN;
+                        out << Colors::GREEN;
                     }
-                    std::cout << std::setfill('0') << std::setw(2) << std::hex 
+                    out << std::setfill('0') << std::setw(2) << std::hex 
                              << static_cast<unsigned>(vec1[i + j]) << Colors::RESET << " ";
                 } else {
-                    std::cout << Colors::YELLOW << "--" << Colors::RESET << " ";
+                    out << Colors::YELLOW << "--" << Colors::RESET << " ";
                 }
             }
-            std::cout << "\n";
+            out << "\n";
             
             // Print vec2 line directly below vec1 with same position
-            std::cout << "           | " << Colors::BOLD << "Vec2: " << Colors::RESET;
+            out << "           | " << Colors::BOLD << "Vec2: " << Colors::RESET;
             for (std::size_t j = 0; j < bytes_per_line && (i + j) < max_size; ++j) {
                 bool has_diff = false;
                 if (i + j < len1 && i + j < len2) {
@@ -197,20 +201,20 @@ public:
                 
                 if (i + j < len2) {
                     if (has_diff) {
-                        std::cout << Colors::BG_RED << Colors::WHITE;
+                        out << Colors::BG_RED << Colors::WHITE;
                     } else {
-                        std::cout << Colors::GREEN;
+                        out << Colors::GREEN;
                     }
-                    std::cout << std::setfill('0') << std::setw(2) << std::hex 
+                    out << std::setfill('0') << std::setw(2) << std::hex 
                              << static_cast<unsigned>(vec2[i + j]) << Colors::RESET << " ";
                 } else {
-                    std::cout << Colors::YELLOW << "--" << Colors::RESET << " ";
+                    out << Colors::YELLOW << "--" << Colors::RESET << " ";
                 }
             }
-            std::cout << "\n";
+            out << "\n";
             
             // Print difference indicators (^ symbols) under differing positions
-            std::cout << "           | " << std::string(6, ' '); // Align with "Vec2: " prefix
+            out << "           | " << std::string(6, ' '); // Align with "Vec2: " prefix
             for (std::size_t j = 0; j < bytes_per_line && (i + j) < max_size; ++j) {
                 bool has_diff = false;
                 if (i + j < len1 && i + j < len2) {
@@ -220,44 +224,46 @@ public:
                 }
                 
                 if (has_diff && (i + j < len1 || i + j < len2)) {
-                    std::cout << Colors::RED << "^" << Colors::RESET << "  ";
+                    out << Colors::RED << "^" << Colors::RESET << "  ";
                 } else {
-                    std::cout << "   ";
+                    out << "   ";
                 }
             }
-            std::cout << "\n";
+            out << "\n";
             
             // Add a separator line between chunks for clarity
             if (i + bytes_per_line < max_size) {
-                std::cout << "           |" << std::string(101, '.') << "\n";
+                out << "           |" << std::string(101, '.') << "\n";
             }
         }
         
         // Print legend
-        std::cout << "\n" << Colors::BOLD << "Legend:" << Colors::RESET << "\n";
-        std::cout << Colors::GREEN << "●" << Colors::RESET << " Matching bytes  ";
-        std::cout << Colors::BG_RED << Colors::WHITE << "●" << Colors::RESET << " Different bytes  ";
-        std::cout << Colors::YELLOW << "●" << Colors::RESET << " Missing bytes\n";
+        out << "\n" << Colors::BOLD << "Legend:" << Colors::RESET << "\n";
+        out << Colors::GREEN << "●" << Colors::RESET << " Matching bytes  ";
+        out << Colors::BG_RED << Colors::WHITE << "●" << Colors::RESET << " Different bytes  ";
+        out << Colors::YELLOW << "●" << Colors::RESET << " Missing bytes\n";
         
-        std::cout << std::dec; // Reset to decimal
+        out << std::dec; // Reset to decimal
     }
     
     // Compact difference summary
     static void print_differences(const uint8_t* vec1, std::size_t len1,
-                                const uint8_t* vec2, std::size_t len2) {
+                                const uint8_t* vec2, std::size_t len2,
+                                std::ostream* output = nullptr) {
+        std::ostream& out = output ? *output : std::cout;
         auto differences = compare(vec1, len1, vec2, len2);
         
         if (differences.empty()) {
-            std::cout << "✓ Vectors are identical\n";
+            out << "✓ Vectors are identical\n";
             return;
         }
         
-        std::cout << "✗ Found " << differences.size() << " differences:\n";
-        std::cout << "Pos   | Vec1 | Vec2 | Decimal Diff\n";
-        std::cout << "------|------|------|-------------\n";
+        out << "✗ Found " << differences.size() << " differences:\n";
+        out << "Pos   | Vec1 | Vec2 | Decimal Diff\n";
+        out << "------|------|------|-------------\n";
         
         for (const auto& diff : differences) {
-            std::cout << std::setfill(' ') << std::setw(5) << std::dec << diff.position << " | "
+            out << std::setfill(' ') << std::setw(5) << std::dec << diff.position << " | "
                      << std::setfill('0') << std::setw(2) << std::hex 
                      << static_cast<unsigned>(diff.value1) << "   | "
                      << std::setfill('0') << std::setw(2) << std::hex 
@@ -268,21 +274,23 @@ public:
     
     // Statistical summary
     static void print_statistics(const uint8_t* vec1, std::size_t len1,
-                               const uint8_t* vec2, std::size_t len2) {
+                               const uint8_t* vec2, std::size_t len2,
+                               std::ostream* output = nullptr) {
+        std::ostream& out = output ? *output : std::cout;
         auto differences = compare(vec1, len1, vec2, len2);
         std::size_t common_length = std::min(len1, len2);
         std::size_t max_length = std::max(len1, len2);
         
-        std::cout << "\n=== Comparison Statistics ===\n";
-        std::cout << "Vector 1 size: " << len1 << " bytes\n";
-        std::cout << "Vector 2 size: " << len2 << " bytes\n";
-        std::cout << "Size difference: " << static_cast<int>(len2) - static_cast<int>(len1) << " bytes\n";
-        std::cout << "Total differences: " << differences.size() << "\n";
-        std::cout << "Common length: " << common_length << " bytes\n";
+        out << "\n=== Comparison Statistics ===\n";
+        out << "Vector 1 size: " << len1 << " bytes\n";
+        out << "Vector 2 size: " << len2 << " bytes\n";
+        out << "Size difference: " << static_cast<int>(len2) - static_cast<int>(len1) << " bytes\n";
+        out << "Total differences: " << differences.size() << "\n";
+        out << "Common length: " << common_length << " bytes\n";
         
         if (max_length > 0) {
             double match_ratio = static_cast<double>(max_length - differences.size()) / max_length * 100.0;
-            std::cout << "Match ratio: " << std::fixed << std::setprecision(2) << match_ratio << "%\n";
+            out << "Match ratio: " << std::fixed << std::setprecision(2) << match_ratio << "%\n";
         }
     }
 };
@@ -398,6 +406,41 @@ int main() {
     
     std::cout << "\n=== Method 8: Diff string format ===\n";
     std::cout << VectorDiff::generate_diff_string(data1, len1, data2, len2);
+    
+    std::cout << "\n\n=== Demonstration: Using stringstream for programmatic output ===\n";
+    std::ostringstream buffer;
+    
+    // Capture comparison output in a string
+    VectorComparator::print_differences(data1, len1, data2, len2, &buffer);
+    VectorComparator::print_statistics(data1, len1, data2, len2, &buffer);
+    
+    std::string result = buffer.str();
+    std::cout << "Captured " << result.length() << " characters of output:\n";
+    std::cout << "--- Begin Captured Output ---\n";
+    std::cout << result;
+    std::cout << "--- End Captured Output ---\n";
+    
+    // Demonstrate interleaved comparison with stringstream
+    std::cout << "\n=== Demonstration: Interleaved comparison to stringstream ===\n";
+    std::ostringstream interleaved_buffer;
+    VectorComparator::print_interleaved_comparison(data1, len1, data2, len2, 16, &interleaved_buffer);
+    
+    std::string interleaved_result = interleaved_buffer.str();
+    std::cout << "Captured interleaved comparison (" << interleaved_result.length() << " characters, 16 bytes per line):\n";
+    std::cout << "--- Begin Interleaved Output (16 bytes/line) ---\n";
+    std::cout << interleaved_result;
+    std::cout << "--- End Interleaved Output ---\n";
+    
+    // Also demonstrate with 32 bytes per line (default)
+    std::cout << "\n=== Demonstration: Interleaved comparison to stringstream (32 bytes/line) ===\n";
+    std::ostringstream interleaved_buffer_32;
+    VectorComparator::print_interleaved_comparison(data1, len1, data2, len2, 32, &interleaved_buffer_32);
+    
+    std::string interleaved_result_32 = interleaved_buffer_32.str();
+    std::cout << "Captured interleaved comparison (" << interleaved_result_32.length() << " characters, 32 bytes per line):\n";
+    std::cout << "--- Begin Interleaved Output (32 bytes/line) ---\n";
+    std::cout << interleaved_result_32;
+    std::cout << "--- End Interleaved Output ---\n";
     
     return 0;
 }
